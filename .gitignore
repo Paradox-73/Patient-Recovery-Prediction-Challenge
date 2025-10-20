@@ -1,0 +1,96 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+*.pyl
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+dist/
+eggs/
+*.egg-info/
+.env/
+.venv/
+venv/
+env/
+*/bin/activate
+*/bin/activate.fish
+*/bin/activate.csh
+*/bin/Activate.ps1
+*/bin/python
+*/bin/python3
+*/bin/pip
+*/bin/pip3
+*/bin/python.exe
+*/bin/pythonw.exe
+*/bin/easy_install
+*/bin/f2py
+*/bin/f2py.exe
+*/bin/fonttools
+*/bin/fonttools.exe
+*/bin/numpy-config
+*/bin/numpy-config.exe
+*/bin/pyftmerge
+*/bin/pyftmerge.exe
+*/bin/pyftsubset
+*/bin/pyftsubset.exe
+*/bin/ttx
+*/bin/ttx.exe
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Environments
+.env
+.venv
+env/
+venv/
+EVN/
+env.bak/
+venv.bak/
+
+# Editors
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+.Trashes
+Thumbs.db
+
+# Models
+*.pkl
+*.h5
+*.onnx
+*.pb
+
+# Data
+data/
+output/
+error.txt
