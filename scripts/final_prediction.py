@@ -33,41 +33,25 @@ def generate_submission():
     # Preprocess test data using the *same* scaler fitted on training data
     X_test_processed, _ = preprocess_data(X_test, is_train=False, scaler=scaler)
 
-    # Load best-tuned models for ensembling
-    print("Loading best-tuned models for ensembling...")
-    # Assuming these models were saved from hyperparameter_tuning.py
-    # You might need to adjust these filenames based on what was actually saved.
+    # --- THIS IS THE KEY CHANGE ---
+    # Load ONLY the best-tuned model. 
+    # Your log showed Lasso was best, but Ridge was almost identical.
+    # We will load the best_lasso.pkl
+    print("Loading the best-tuned model (Lasso)...")
     try:
-        rf_model = joblib.load(r'E:\IIITB\ML\Project\models/best_randomforestregressor.pkl')
-        ridge_model = joblib.load(r'E:\IIITB\ML\Project\models/best_ridge.pkl')
-        lasso_model = joblib.load(r'E:\IIITB\ML\Project\models/best_lasso.pkl')
-        dt_model = joblib.load(r'E:\IIITB\ML\Project\models/best_decisiontreeregressor.pkl')
-        
-        models_to_ensemble = [
-            ('RandomForest', rf_model),
-            ('Ridge', ridge_model),
-            ('Lasso', lasso_model),
-            ('DecisionTree', dt_model)
-        ]
+        # We will use Lasso as it had the (slightly) best R2 in your log 
+        best_model = joblib.load(r'E:\IIITB\ML\Project\models/best_lasso.pkl')
     except FileNotFoundError:
-        print("Warning: Not all best-tuned models found. Using available models for ensemble.")
-        # Fallback: if any tuned model is missing, we'll just use the best RandomForest
-        rf_model = joblib.load(r'E:\IIITB\ML\Project\models/best_randomforestregressor.pkl')
-        models_to_ensemble = [('RandomForest', rf_model)]
+        print("Error: 'best_lasso.pkl' not found. Make sure you ran hyperparameter_tuning.py")
+        return
 
-    # Generate predictions from each model
-    all_predictions = []
-    for name, model in models_to_ensemble:
-        print(f"Generating predictions with {name}...")
-        predictions = model.predict(X_test_processed)
-        all_predictions.append(predictions)
-
-    # Ensemble: Average the predictions
-    print("Ensembling predictions by averaging...")
-    ensemble_predictions = np.mean(all_predictions, axis=0)
+    # Generate predictions from the single best model
+    print("Generating predictions...")
+    final_predictions = best_model.predict(X_test_processed)
+    # --- END OF KEY CHANGE ---
 
     # Create submission file
-    submission_df = pd.DataFrame({'Id': test_ids, 'Recovery Index': ensemble_predictions})
+    submission_df = pd.DataFrame({'Id': test_ids, 'Recovery Index': final_predictions})
     submission_df.to_csv(r'E:\IIITB\ML\Project\output/submission.csv', index=False)
 
     print("Submission file created at 'output/submission.csv'.")

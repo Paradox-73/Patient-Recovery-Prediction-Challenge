@@ -93,4 +93,8 @@ Thumbs.db
 # Data
 data/
 output/
+
+ML/
 error.txt
+reports/
+log.txt

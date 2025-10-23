@@ -8,25 +8,16 @@ import numpy as np
 
 
 def create_features(df):
-
+    # Polynomial features for the most important variables
+    df['Health_Score_sq'] = df['Initial Health Score']**2
+    df['Therapy_Hours_sq'] = df['Therapy Hours']**2
+    
     # Interaction features
-
     df['Therapy_Health_Interaction'] = df['Therapy Hours'] * df['Initial Health Score']
-
+    
+    # Interaction between the two weak features
     df['Sleep_FollowUp_Interaction'] = df['Average Sleep Hours'] * df['Follow-Up Sessions']
-
     
-
-    # Log transformations for potentially skewed numerical features (add 1 to handle zeros)
-
-    for col in ['Therapy Hours', 'Initial Health Score', 'Average Sleep Hours', 'Follow-Up Sessions']:
-
-        if col in df.columns:
-
-            df[f'{col}_log'] = np.log1p(df[col])
-
-    
-
     return df
 
 
