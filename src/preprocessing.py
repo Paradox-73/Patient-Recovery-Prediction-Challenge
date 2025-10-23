@@ -11,12 +11,14 @@ def create_features(df):
     # Polynomial features for the most important variables
     df['Health_Score_sq'] = df['Initial Health Score']**2
     df['Therapy_Hours_sq'] = df['Therapy Hours']**2
+    df['Health_Score_cub'] = df['Initial Health Score']**3
+    df['Therapy_Hours_cub'] = df['Therapy Hours']**3
     
     # Interaction features
     df['Therapy_Health_Interaction'] = df['Therapy Hours'] * df['Initial Health Score']
-    
-    # Interaction between the two weak features
     df['Sleep_FollowUp_Interaction'] = df['Average Sleep Hours'] * df['Follow-Up Sessions']
+    df['Health_Sleep_Interaction'] = df['Initial Health Score'] * df['Average Sleep Hours']
+    df['Therapy_FollowUp_Interaction'] = df['Therapy Hours'] * df['Follow-Up Sessions']
     
     return df
 

@@ -12,9 +12,10 @@ import numpy as np
 import joblib
 
 from src.preprocessing import preprocess_data
-from src.models import get_models
+from sklearn.linear_model import LinearRegression, Ridge, Lasso # Import models for type hinting/clarity
+from sklearn.ensemble import GradientBoostingRegressor # Removed StackingRegressor
 
-def train_evaluate_models():
+def train_evaluate_tuned_models():
     # Load data
     train_df = pd.read_csv(r'E:\IIITB\ML\Project\data\train.csv')
 
@@ -22,17 +23,27 @@ def train_evaluate_models():
     X_full = train_df.drop(columns=['Id', 'Recovery Index'])
     y_full = train_df['Recovery Index']
 
-    # Preprocess data (fit scaler on full training data)
-    X_processed_full, scaler = preprocess_data(X_full, is_train=True)
+    # Load the scaler fitted on the full training data
+    scaler = joblib.load(r'E:\IIITB\ML\Project\models/scaler.pkl')
+    X_processed_full, _ = preprocess_data(X_full, is_train=False, scaler=scaler)
 
-    models = get_models()
+    # Load the tuned models
+    tuned_models = {}
+    model_names = ['LinearRegression', 'Ridge', 'Lasso', 'GradientBoostingRegressor'] # Include GBR
+    for name in model_names:
+        try:
+            model_path = fr'E:\IIITB\ML\Project\models/best_{name.replace(" ", "_").lower()}.pkl'
+            tuned_models[name] = joblib.load(model_path)
+            print(f"Loaded tuned {name} from {model_path}")
+        except FileNotFoundError:
+            print(f"Warning: Tuned model for {name} not found at {model_path}. Skipping evaluation for this model.")
+            continue
+
     results = {}
-    trained_models = {}
-
     kf = KFold(n_splits=5, shuffle=True, random_state=42)
 
-    for name, model in models.items():
-        print(f"\nTraining and evaluating {name} with KFold cross-validation...")
+    for name, model in tuned_models.items():
+        print(f"\nEvaluating tuned {name} with KFold cross-validation...")
         mse_scores = []
         rmse_scores = []
         r2_scores = []
@@ -44,7 +55,7 @@ def train_evaluate_models():
             X_train, X_val = X_processed_full.iloc[train_index], X_processed_full.iloc[val_index]
             y_train, y_val = y_full.iloc[train_index], y_full.iloc[val_index]
 
-            model.fit(X_train, y_train)
+            # For already tuned models, we just predict on the validation set
             y_pred = model.predict(X_val)
 
             mse = mean_squared_error(y_val, y_pred)
@@ -66,7 +77,6 @@ def train_evaluate_models():
         avg_r2 = np.mean(r2_scores)
 
         results[name] = {'Avg MSE': avg_mse, 'Avg RMSE': avg_rmse, 'Avg R2': avg_r2}
-        trained_models[name] = model # Store the last trained model (or retrain on full data later)
 
         print(f"{name} - Avg MSE: {avg_mse:.4f}, Avg RMSE: {avg_rmse:.4f}, Avg R2: {avg_r2:.4f}")
 
@@ -76,42 +86,11 @@ def train_evaluate_models():
         error_df = error_df.sort_values(by='Error', ascending=False).head(5)
         print(f"Top 5 largest errors for {name}:\n{error_df}")
 
-    # Save the best performing models and scaler
-    best_model_name = max(results, key=lambda k: results[k]['Avg R2'])
-    print(f"\nBest performing model based on Avg R2: {best_model_name}")
+    print("\nModel Evaluation Results (KFold Cross-Validation) for Tuned Models:")
+    results_df = pd.DataFrame(results).T
+    print(results_df.sort_values(by='Avg R2', ascending=False))
 
-    # Retrain the best model on the full dataset for saving
-    best_model_instance = models[best_model_name]
-    best_model_instance.fit(X_processed_full, y_full)
-    joblib.dump(best_model_instance, fr'E:\IIITB\ML\Project\models/{best_model_name.replace(" ", "_").lower()}_final.pkl')
-    joblib.dump(scaler, r'E:\IIITB\ML\Project\models/scaler.pkl')
-
-    print("Models and scaler saved to 'models/' directory.")
     return results
 
 if __name__ == "__main__":
-    evaluation_results = train_evaluate_models()
-    results_df = pd.DataFrame(evaluation_results).T
-    print("\nModel Evaluation Results (KFold Cross-Validation):")
-    print(results_df.sort_values(by='Avg R2', ascending=False))
-
-
-if __name__ == "__main__":
-    evaluation_results = train_evaluate_models()
-    results_df = pd.DataFrame(evaluation_results).T
-    print("\nModel Evaluation Results (KFold Cross-Validation):")
-    print(results_df.sort_values(by='Avg R2', ascending=False))
-
-
-if __name__ == "__main__":
-    evaluation_results = train_evaluate_models()
-    results_df = pd.DataFrame(evaluation_results).T
-    print("\nModel Evaluation Results (KFold Cross-Validation):")
-    print(results_df.sort_values(by='Avg R2', ascending=False))
-
-
-if __name__ == "__main__":
-    evaluation_results = train_evaluate_models()
-    results_df = pd.DataFrame(evaluation_results).T
-    print("\nModel Evaluation Results:")
-    print(results_df.sort_values(by='Avg R2', ascending=False))
+    train_evaluate_tuned_models()
