@@ -1,3 +1,0 @@
-Best Model: ElasticNet
-Best R2 Score: 0.988639
-Model Path: E:\IIITB\ML\Project\models/best_elasticnet.pkl

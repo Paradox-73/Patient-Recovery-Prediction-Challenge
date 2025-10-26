@@ -93,9 +93,5 @@ Thumbs.db
 # Data
 data/
 output/
+Bulldogs in Paris.pdf
 
-ML/
-error.txt
-reports/
-log.txt
-models/best_overall_model_info.txt
