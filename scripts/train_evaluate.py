@@ -12,8 +12,10 @@ import numpy as np
 import joblib
 
 from src.preprocessing import preprocess_data
-from sklearn.linear_model import LinearRegression, Ridge, Lasso # Import models for type hinting/clarity
-from sklearn.ensemble import GradientBoostingRegressor # Removed StackingRegressor
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet # Import models for type hinting/clarity
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor, AdaBoostRegressor # Added RandomForestRegressor, AdaBoostRegressor
+from sklearn.tree import DecisionTreeRegressor # Added DecisionTreeRegressor
+from sklearn.neighbors import KNeighborsRegressor # Added KNeighborsRegressor
 
 def train_evaluate_tuned_models():
     # Load data
@@ -29,7 +31,7 @@ def train_evaluate_tuned_models():
 
     # Load the tuned models
     tuned_models = {}
-    model_names = ['LinearRegression', 'Ridge', 'Lasso', 'GradientBoostingRegressor'] # Include GBR
+    model_names = ['LinearRegression', 'Ridge', 'Lasso', 'ElasticNet', 'RandomForestRegressor', 'DecisionTreeRegressor', 'GradientBoostingRegressor', 'AdaBoostRegressor', 'K-Neighbors Regressor'] # Updated model_names
     for name in model_names:
         try:
             model_path = fr'E:\IIITB\ML\Project\models/best_{name.replace(" ", "_").lower()}.pkl'

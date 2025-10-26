@@ -19,6 +19,24 @@ def create_features(df):
     df['Sleep_FollowUp_Interaction'] = df['Average Sleep Hours'] * df['Follow-Up Sessions']
     df['Health_Sleep_Interaction'] = df['Initial Health Score'] * df['Average Sleep Hours']
     df['Therapy_FollowUp_Interaction'] = df['Therapy Hours'] * df['Follow-Up Sessions']
+    df['Health_FollowUp_Interaction'] = df['Initial Health Score'] * df['Follow-Up Sessions']
+    df['Sleep_Therapy_Interaction'] = df['Average Sleep Hours'] * df['Therapy Hours']
+    
+    # New Feature Engineering:
+    # Log transformation for potentially skewed features (e.g., Therapy Hours)
+    df['Therapy_Hours_log'] = np.log1p(df['Therapy Hours']) # log1p handles zero values gracefully
+    df['Initial_Health_Score_log'] = np.log1p(df['Initial Health Score'])
+    df['Average_Sleep_Hours_log'] = np.log1p(df['Average Sleep Hours'])
+
+    # More interaction terms
+    df['Health_Score_Therapy_Hours_Ratio'] = df['Initial Health Score'] / (df['Therapy Hours'] + 1e-6) # Add small epsilon to avoid division by zero
+    df['FollowUp_Sleep_Ratio'] = df['Follow-Up Sessions'] / (df['Average Sleep Hours'] + 1e-6)
+
+    # Interaction with 'Lifestyle Activities'
+    df['Lifestyle_Health_Interaction'] = df['Lifestyle Activities'] * df['Initial Health Score']
+    df['Lifestyle_Therapy_Interaction'] = df['Lifestyle Activities'] * df['Therapy Hours']
+    df['Lifestyle_Sleep_Interaction'] = df['Lifestyle Activities'] * df['Average Sleep Hours']
+    df['Lifestyle_FollowUp_Interaction'] = df['Lifestyle Activities'] * df['Follow-Up Sessions']
     
     return df
 
@@ -26,15 +44,13 @@ def create_features(df):
 
 def preprocess_data(df, is_train=True, scaler=None):
 
-    # Create new features
+    # Handle Categorical Variables: Convert 'Lifestyle Activities' from 'Yes'/'No' to 1/0
+    df['Lifestyle Activities'] = df['Lifestyle Activities'].map({'Yes': 1, 'No': 0})
 
+    # Create new features
     df = create_features(df.copy())
 
-
-
-    # Handle Categorical Variables: Convert 'Lifestyle Activities' from 'Yes'/'No' to 1/0
-
-    df['Lifestyle Activities'] = df['Lifestyle Activities'].map({'Yes': 1, 'No': 0})
+    
 
 
 

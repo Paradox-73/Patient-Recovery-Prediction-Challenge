@@ -35,12 +35,23 @@ def generate_submission():
     # Preprocess test data using the *same* scaler fitted on training data
     X_test_processed, _ = preprocess_data(X_test, is_train=False, scaler=scaler)
 
-    # Load the best-tuned Lasso model
-    print("Loading the best-tuned Lasso model...")
+    # Load the overall best model information
+    print("Loading overall best model information...")
     try:
-        best_model = joblib.load(r'E:\IIITB\ML\Project\models/best_lasso.pkl')
+        with open(r'E:\IIITB\ML\Project\models/best_overall_model_info.txt', 'r') as f:
+            model_info = f.readlines()
+        best_overall_model_path = model_info[2].split('Model Path: ')[1].strip()
+        best_overall_model_name = model_info[0].split(':')[1].strip()
     except FileNotFoundError:
-        print("Error: 'best_lasso.pkl' not found. Make sure you ran hyperparameter_tuning.py")
+        print("Error: 'best_overall_model_info.txt' not found. Make sure you ran hyperparameter_tuning.py")
+        return
+
+    # Load the best-tuned model
+    print(f"Loading the best-tuned {best_overall_model_name} model from {best_overall_model_path}...")
+    try:
+        best_model = joblib.load(best_overall_model_path)
+    except FileNotFoundError:
+        print(f"Error: Model file not found at {best_overall_model_path}.")
         return
 
     # Generate predictions from the single best model

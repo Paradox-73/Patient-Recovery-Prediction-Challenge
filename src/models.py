@@ -3,6 +3,7 @@ from sklearn.linear_model import LinearRegression, Lasso, Ridge
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, AdaBoostRegressor
 from sklearn.neighbors import KNeighborsRegressor
+from sklearn.linear_model import ElasticNet # Added ElasticNet
 
 def get_models():
     models = {
@@ -13,6 +14,7 @@ def get_models():
         'AdaBoost Regressor': AdaBoostRegressor(random_state=42),
         'K-Neighbors Regressor': KNeighborsRegressor(),
         'Lasso': Lasso(random_state=42),
-        'Ridge': Ridge(random_state=42)
+        'Ridge': Ridge(random_state=42),
+        'ElasticNet': ElasticNet(random_state=42) # Added ElasticNet
     }
     return models
